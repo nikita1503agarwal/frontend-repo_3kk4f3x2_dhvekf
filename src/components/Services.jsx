@@ -1,4 +1,4 @@
-import { Cube, PenTool, Film, Layers, Sparkle, Rocket } from 'lucide-react'
+import { Cube, PenTool, Film, Layers } from 'lucide-react'
 import ServiceCard from './ServiceCard'
 import { motion } from 'framer-motion'
 

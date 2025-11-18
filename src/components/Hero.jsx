@@ -1,13 +1,30 @@
-import Spline from '@splinetool/react-spline'
+import React, { Suspense, useMemo } from 'react'
 import { motion } from 'framer-motion'
 import { ArrowRight } from 'lucide-react'
 import { Link } from 'react-router-dom'
 
+// Lazy-load Spline so a load error doesn't crash the whole app
+const Spline = React.lazy(() =>
+  import('@splinetool/react-spline').then((m) => ({ default: m.default }))
+)
+
 export default function Hero() {
+  const liteMode = useMemo(() => {
+    if (typeof window === 'undefined') return false
+    const params = new URLSearchParams(window.location.search)
+    return params.get('lite') === '1'
+  }, [])
+
   return (
     <section className="relative min-h-[92vh] overflow-hidden">
       <div className="absolute inset-0">
-        <Spline scene="https://prod.spline.design/UngO8SNLfLcyPG7O/scene.splinecode" style={{ width: '100%', height: '100%' }} />
+        {liteMode ? (
+          <div className="w-full h-full bg-gradient-to-br from-slate-900 to-slate-950" />
+        ) : (
+          <Suspense fallback={<div className="w-full h-full bg-gradient-to-b from-slate-900 to-slate-950" />}> 
+            <Spline scene="https://prod.spline.design/UngO8SNLfLcyPG7O/scene.splinecode" style={{ width: '100%', height: '100%' }} />
+          </Suspense>
+        )}
       </div>
 
       <div className="absolute inset-0 bg-gradient-to-b from-slate-900/10 via-slate-900/40 to-slate-900 pointer-events-none" />
@@ -34,6 +51,10 @@ export default function Hero() {
               View Work
             </a>
           </div>
+
+          {liteMode && (
+            <p className="mt-6 text-slate-400 text-sm">Lite mode is on (no 3D). Remove ?lite=1 from the URL to load the 3D hero.</p>
+          )}
         </motion.div>
       </div>
     </section>
